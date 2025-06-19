@@ -150,7 +150,7 @@ export class WebSocketServer {
     }
 
     if (!Array.isArray(rules) || rules.length === 0) {
-      throw new Error('Invalid ant rules')
+      throw new Error('Invalid ant rules: rules must be a non-empty array')
     }
 
     this.validateRules(rules)

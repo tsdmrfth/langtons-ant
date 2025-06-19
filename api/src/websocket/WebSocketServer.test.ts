@@ -179,7 +179,7 @@ describe('WebSocketServer', () => {
           const fail = () => {
             client.terminate()
             wss.stop()
-            httpServer.close(() => {})
+            httpServer.close(() => { })
           }
 
           client.on('open', () => {
@@ -231,6 +231,233 @@ describe('WebSocketServer', () => {
           done(new Error('Rate limit error not received'))
         }
       }, 2000)
+    })
+  })
+
+  describe('Validation', () => {
+    const rule: Rule = { currentColor: '#FFFFFF', newColor: '#000000', turnDirection: 'RIGHT' }
+
+    it('sends ERROR when message has no type', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          client.send(JSON.stringify({ payload: {} }))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/missing type/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('sends ERROR for unknown message type', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalid = { type: 'UNKNOWN_TYPE', payload: {} }
+          client.send(JSON.stringify(invalid))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/invalid message type/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('rejects PLACE_ANT with negative coordinates', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalidAnt = {
+            type: 'PLACE_ANT',
+            payload: {
+              position: { x: -1, y: 0 },
+              rules: [rule]
+            }
+          }
+          client.send(JSON.stringify(invalidAnt))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/x and y must be positive/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('rejects PLACE_ANT with non-numeric coordinates', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalidAnt = {
+            type: 'PLACE_ANT',
+            payload: {
+              position: { x: 'a', y: 0 },
+              rules: [rule]
+            }
+          }
+          client.send(JSON.stringify(invalidAnt))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/ant position x and y must be numbers/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('sends ERROR for empty rules', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalid = { type: 'PLACE_ANT', payload: { position: { x: 0, y: 0 }, rules: [] } }
+          client.send(JSON.stringify(invalid))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/rules must be a non-empty array/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('sends ERROR for missing currentColor in rules', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalid = {
+            type: 'PLACE_ANT', payload: {
+              position: { x: 0, y: 0 }, rules: [{
+                // currentColor: '#FFFFFF', // missing currentColor
+                newColor: '#000000',
+                turnDirection: 'LEFT'
+              }]
+            }
+          }
+          client.send(JSON.stringify(invalid))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/currentColor, newColor, and turnDirection are required/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('sends ERROR for missing newColor in rules', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalid = {
+            type: 'PLACE_ANT', payload: {
+              position: { x: 0, y: 0 }, rules: [{
+                currentColor: '#FFFFFF',
+                // newColor: '#000000', missing newColor
+                turnDirection: 'LEFT'
+              }]
+            }
+          }
+          client.send(JSON.stringify(invalid))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/currentColor, newColor, and turnDirection are required/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('sends ERROR for missing turnDirection in rules', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalid = {
+            type: 'PLACE_ANT', payload: {
+              position: { x: 0, y: 0 }, rules: [{
+                currentColor: '#FFFFFF',
+                newColor: '#000000',
+                // turnDirection: 'LEFT', missing turnDirection
+              }]
+            }
+          }
+          client.send(JSON.stringify(invalid))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/currentColor, newColor, and turnDirection are required/i)
+          client.close()
+          done()
+        }
+      })
+    })
+
+    it('sends ERROR for invalid turnDirection in rules', done => {
+      const client = createClient()
+
+      client.on('message', data => {
+        const message = JSON.parse(data.toString())
+
+        if (message.type === 'PLAYER_JOIN') {
+          const invalid = {
+            type: 'PLACE_ANT', payload: {
+              position: { x: 0, y: 0 }, rules: [{
+                currentColor: '#FFFFFF',
+                newColor: '#000000',
+                turnDirection: 'INVALID'
+              }]
+            }
+          }
+          client.send(JSON.stringify(invalid))
+          return
+        }
+
+        if (message.type === 'ERROR') {
+          expect(message.payload.message).toMatch(/turnDirection must be LEFT or RIGHT/i)
+          client.close()
+          done()
+        }
+      })
     })
   })
 }) 
