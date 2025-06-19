@@ -9,6 +9,9 @@ name: CI
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     strategy:
       matrix:
         node-version: [24.x]
@@ -24,6 +27,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Build api
-        run: cd api && yarn build:server
+        run: yarn build:server
       - name: Test api
-        run: cd api && yarn test 
+        run: yarn test 
