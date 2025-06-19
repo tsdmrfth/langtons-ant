@@ -87,7 +87,6 @@ All steps run from the `api` sub-directory to keep the mono-repo future-proof.  
 ---
 ## Future Work
 With more time, I would have liked to implement and test the following:
-- Replace `Map<string, Color>` with typed arrays inside each chunk to cut memory and accelerate traversal.
 - Offload tick processing to worker threads to maintain WebSocket event loop responsiveness for larger grids.
 - Partition the grid across shards and broadcast merged diffs for larger loads (e.g. 10k×10k grid with 160 players)
 - Add a Redis layer plus periodic snapshots to enable restarts and historical replay.
