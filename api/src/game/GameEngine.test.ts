@@ -343,5 +343,137 @@ describe('GameEngine', () => {
                 expect(ant.position.y).toBeLessThan(gameConfig.gridHeight)
             })
         })
+
+        it('handles 100 ants on 1000X1000 grid for 1000 ticks with 100 milliseconds tick interval without errors', () => {
+            const gameConfig: GameConfig = {
+                gridWidth: 1000,
+                gridHeight: 1000,
+                tickInterval: 100,
+                chunkSize: 50,
+                maxPlayers: 100,
+                heartbeatInterval: 10000
+            }
+            const engine = new GameEngine(gameConfig)
+            const baseRule: Rule = {
+                currentColor: '#FFFFFF',
+                newColor: '#000000',
+                turnDirection: 'RIGHT'
+            }
+            const positions = new Set<string>()
+            for (let i = 0; i < 100; i++) {
+                const player = engine.addPlayer()
+                let x: number
+                let y: number
+                do {
+                    x = Math.floor(Math.random() * gameConfig.gridWidth)
+                    y = Math.floor(Math.random() * gameConfig.gridHeight)
+                } while (positions.has(`${x},${y}`))
+                positions.add(`${x},${y}`)
+                engine.placeAnt(player.id, { x, y }, [baseRule])
+            }
+            expect(engine.getState().ants.length).toBe(100)
+
+            for (let i = 0; i < 1000; i++) {
+                engine.tick()
+            }
+
+            const state = engine.getState()
+            expect(state.ants.length).toBe(100)
+
+            state.ants.forEach(ant => {
+                expect(ant.position.x).toBeGreaterThanOrEqual(0)
+                expect(ant.position.x).toBeLessThan(gameConfig.gridWidth)
+                expect(ant.position.y).toBeGreaterThanOrEqual(0)
+                expect(ant.position.y).toBeLessThan(gameConfig.gridHeight)
+            })
+        })
+
+        it('handles 100 ants on 10000X10000 grid for 1000 ticks with 100 milliseconds tick interval without errors', () => {
+            const gameConfig: GameConfig = {
+                gridWidth: 10000,
+                gridHeight: 10000,
+                tickInterval: 100,
+                chunkSize: 50,
+                maxPlayers: 100,
+                heartbeatInterval: 10000
+            }
+            const engine = new GameEngine(gameConfig)
+            const baseRule: Rule = {
+                currentColor: '#FFFFFF',
+                newColor: '#000000',
+                turnDirection: 'RIGHT'
+            }
+            const positions = new Set<string>()
+            for (let i = 0; i < 100; i++) {
+                const player = engine.addPlayer()
+                let x: number
+                let y: number
+                do {
+                    x = Math.floor(Math.random() * gameConfig.gridWidth)
+                    y = Math.floor(Math.random() * gameConfig.gridHeight)
+                } while (positions.has(`${x},${y}`))
+                positions.add(`${x},${y}`)
+                engine.placeAnt(player.id, { x, y }, [baseRule])
+            }
+            expect(engine.getState().ants.length).toBe(100)
+
+            for (let i = 0; i < 1000; i++) {
+                engine.tick()
+            }
+
+            const state = engine.getState()
+            expect(state.ants.length).toBe(100)
+
+            state.ants.forEach(ant => {
+                expect(ant.position.x).toBeGreaterThanOrEqual(0)
+                expect(ant.position.x).toBeLessThan(gameConfig.gridWidth)
+                expect(ant.position.y).toBeGreaterThanOrEqual(0)
+                expect(ant.position.y).toBeLessThan(gameConfig.gridHeight)
+            })
+        })
+
+        it('handles 1000 ants on 1000X1000 grid for 1000 ticks with 100 milliseconds tick interval without errors', () => {
+            const gameConfig: GameConfig = {
+                gridWidth: 1000,
+                gridHeight: 1000,
+                tickInterval: 100,
+                chunkSize: 50,
+                maxPlayers: 1000,
+                heartbeatInterval: 10000
+            }
+            const engine = new GameEngine(gameConfig)
+            const baseRule: Rule = {
+                currentColor: '#FFFFFF',
+                newColor: '#000000',
+                turnDirection: 'RIGHT'
+            }
+            const positions = new Set<string>()
+            for (let i = 0; i < 1000; i++) {
+                const player = engine.addPlayer()
+                let x: number
+                let y: number
+                do {
+                    x = Math.floor(Math.random() * gameConfig.gridWidth)
+                    y = Math.floor(Math.random() * gameConfig.gridHeight)
+                } while (positions.has(`${x},${y}`))
+                positions.add(`${x},${y}`)
+                engine.placeAnt(player.id, { x, y }, [baseRule])
+            }
+            expect(engine.getState().ants.length).toBe(1000)
+
+            for (let i = 0; i < 1000; i++) {
+                engine.tick()
+            }
+
+            const state = engine.getState()
+            expect(state.ants.length).toBe(1000)
+
+            state.ants.forEach(ant => {
+                expect(ant.position.x).toBeGreaterThanOrEqual(0)
+                expect(ant.position.x).toBeLessThan(gameConfig.gridWidth)
+                expect(ant.position.y).toBeGreaterThanOrEqual(0)
+                expect(ant.position.y).toBeLessThan(gameConfig.gridHeight)
+            })
+        })
     })
-}) 
+})
