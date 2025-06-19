@@ -104,8 +104,8 @@ With more time, I would have liked to implement and test the following:
 ## Performance Benchmarks
 The following numbers were produced on an Apple M2 Pro using the provided benchmark script:
 
-Higher Ops/Sec = faster
-Lower Heap MB = less memory
+- Higher Ops/Sec = faster
+- Lower Heap MB = less memory
 
 | Grid (NxN) | Players | Ops / Sec | Heap MB |
 |------------|---------|-----------|---------|
