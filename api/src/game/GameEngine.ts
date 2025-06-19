@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { Ant, Color, Direction, GameConfig, GameState, GameStateSnapshot, Player, Position, Rule } from '../types/game'
+import { turnAnt, moveAnt } from '../utils/antHelpers'
 
 const COLOR_WHITE = '#FFFFFF'
 
@@ -119,8 +120,8 @@ export class GameEngine {
         cells.set(cellKey, rule.newColor)
       }
 
-      const newDirection = this.turnAnt(ant.direction, rule.turnDirection)
-      const newPosition = this.moveAnt(ant.position, newDirection)
+      const newDirection = turnAnt(ant.direction, rule.turnDirection)
+      const newPosition = moveAnt(ant.position, newDirection, this.config.gridWidth, this.config.gridHeight)
       const newCellKey = this.getCellKey(newPosition)
 
       if (occupiedPositions.has(newCellKey)) {
@@ -198,35 +199,6 @@ export class GameEngine {
 
   private getCellKey(position: Position): string {
     return `${position.x},${position.y}`
-  }
-
-  private turnAnt(currentDirection: Direction, turnDirection: 'LEFT' | 'RIGHT'): Direction {
-    const directions: Direction[] = ['UP', 'RIGHT', 'DOWN', 'LEFT']
-    const currentIndex = directions.indexOf(currentDirection)
-    const turnAmount = turnDirection === 'LEFT' ? -1 : 1
-    const newIndex = (currentIndex + turnAmount + 4) % 4
-    return directions[newIndex]
-  }
-
-  private moveAnt(position: Position, direction: Direction): Position {
-    const newPosition = { ...position }
-
-    switch (direction) {
-      case 'UP':
-        newPosition.y = (newPosition.y - 1 + this.config.gridHeight) % this.config.gridHeight
-        break
-      case 'RIGHT':
-        newPosition.x = (newPosition.x + 1) % this.config.gridWidth
-        break
-      case 'DOWN':
-        newPosition.y = (newPosition.y + 1) % this.config.gridHeight
-        break
-      case 'LEFT':
-        newPosition.x = (newPosition.x - 1 + this.config.gridWidth) % this.config.gridWidth
-        break
-    }
-
-    return newPosition
   }
 
   private generateRandomColor(): Color {
