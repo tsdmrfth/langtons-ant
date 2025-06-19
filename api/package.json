@@ -4,6 +4,7 @@
     "build:server": "tsc",
     "dev": "yarn build:server && node dist/src/server.js",
     "test": "jest src/**/*.test.ts",
+    "benchmark": "yarn build:server && node dist/scripts/benchmark.js",
     "postinstall": "tsc"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@types/node": "^24.0.1",
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.18.1",
+    "fast-check": "^3.15.0",
     "jest": "^30.0.0",
     "jest-util": "^30.0.0",
     "ts-jest": "^29.4.0"
