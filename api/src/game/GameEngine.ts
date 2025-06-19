@@ -90,10 +90,16 @@ export class GameEngine {
 
   public updateRules(playerId: string, rules: Rule[]): boolean {
     const player = this.state.players.get(playerId)
-    if (!player?.antId) return false
+
+    if (!player?.antId) {
+      return false
+    }
 
     const ant = this.state.ants.find(a => a.id === player.antId)
-    if (!ant) return false
+
+    if (!ant) {
+      return false
+    }
 
     ant.rules = rules
     return true
