@@ -71,14 +71,20 @@ yarn test
 * **Fairness:** current collision resolution favours earlier ants.
 
 ---
-## Future Work for Server
+## Future Work
 With more time, I would have liked to implement and test the following:
 - Replace `Map<string, Color>` with typed arrays inside each chunk to cut memory and accelerate traversal.
 - Offload tick processing to worker threads to maintain WebSocket event loop responsiveness for larger grids.
-- Partition the grid across shards and broadcast merged diffs for larger loads. (i.e. 10k×10k grid with 160 players)
+- Partition the grid across shards and broadcast merged diffs for larger loads (e.g. 10k×10k grid with 160 players)
 - Add a Redis layer plus periodic snapshots to enable restarts and historical replay.
 - Add a deployment script to deploy the server to a cloud provider.
 - Add support for other languages.
+- A full React front-end:
+  - Canvas-based grid renderer that repaints only the diffed chunks received in each `GAME_STATE_SNAPSHOT` message
+  - Rule-editor form with client-side validation and live preview, syncing changes via `RULE_CHANGE`
+  - Click/touch interactions for ant placement (`PLACE_ANT`) and tile flip (`TILE_FLIP`)
+  - Reconnect logic with exponential back-off and token reuse so players retain colour and ant
+  - Responsive layout with Tailwind CSS
 
 ---
 ## Performance Benchmarks
