@@ -66,6 +66,20 @@ yarn test
 | **Performance** | `permessage-deflate` is enabled in the WS handshake which cuts average snapshot payload size in local profiling and boosts ops/sec at shorter tick intervals. |
 
 ---
+## Continuous Integration
+This repository ships with a GitHub Actions workflow located at `.github/workflows/ci.yml` which runs on every push and pull-request to the `main` branch.
+
+Pipeline outline
+1. Checkout code
+2. Enable Corepack then activate **Yarn 4.6.0** – matching the `packageManager` field
+3. Spin up a Node 24.x matrix runner
+4. Install dependencies with `yarn install --immutable` using the cached `api/yarn.lock`
+5. Build the TypeScript sources via `yarn build:server`
+6. Execute the Jest test suite with `yarn test`
+
+All steps run from the `api` sub-directory to keep the mono-repo future-proof.  The workflow fails fast on type errors or failing tests, ensuring main is always deployable.
+
+---
 ## Trade-offs 
 * **Colour continuity:** when a player disconnects, their colour is returned to the available pool.  If they reconnect they will be treated as a new player and may receive a different colour – the implementation keeps the server stateless and avoids reserving colours indefinitely.
 * **Fairness:** current collision resolution favours earlier ants.
